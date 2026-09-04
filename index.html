@@ -380,14 +380,19 @@
             }, 100);
         });
 
-        // Initial Scripts Data (Storage-based simulation)
-        let scripts = [
+        // 2. Load Scripts from localStorage (or fallback to default sample script if empty)
+        let scripts = JSON.parse(localStorage.getItem('storeScripts')) || [
             {
                 title: "Sample Script",
                 desc: "Ye ek sample description hai script ka. Aap Manage button se ise control kar sakte hain.",
                 link: "#"
             }
         ];
+
+        // Save scripts to localStorage function
+        function saveScripts() {
+            localStorage.setItem('storeScripts', JSON.stringify(scripts));
+        }
 
         // Elements & Controls
         const manageBtn = document.getElementById('manageBtn');
@@ -488,8 +493,9 @@
                 return;
             }
 
-            // Push to array
+            // Push to array and save to localStorage
             scripts.push({ title, desc, link });
+            saveScripts();
             renderScripts();
 
             // Clear inputs
@@ -504,6 +510,7 @@
         window.deleteScript = function(index) {
             if (confirm('Are you sure you want to delete this script?')) {
                 scripts.splice(index, 1);
+                saveScripts();
                 renderScripts();
             }
         };
