@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Store</title>
+    <style>
+        /* Global Reset & Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        /* Search Box */
+        .search-box {
+            max-width: 400px;
+            margin: 0 auto 40px auto;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #38bdf8;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Script Card */
+        .script-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .script-card:hover {
+            border-color: #38bdf8;
+            transform: translateY(-3px);
+        }
+
+        .script-card h3 {
+            color: #38bdf8;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .script-card p {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        /* Download Button */
+        .download-btn {
+            display: block;
+            text-align: center;
+            background: #0284c7;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #0ea5e9;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid rgba(51, 65, 85, 0.5);
+            color: #64748b;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        /* Manage Button */
+        .manage-btn {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .manage-btn:hover {
+            background: #334155;
+            color: #fff;
+        }
+
+        /* Modals - Hidden by default */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 30px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content.large {
+            max-width: 450px;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #f8fafc;
+            font-size: 1.4rem;
+        }
+
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .modal-content textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .submit-btn, .cancel-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .submit-btn:hover {
+            background: #059669;
+        }
+
+        .cancel-btn {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .cancel-btn:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <h1>Welcome to this website.</h1>
+            <p>Explore and download your required scripts securely.</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search scripts...">
+        </div>
+
+        <!-- Script Grid Container -->
+        <div id="scriptGrid" class="grid">
+            <!-- Default Sample Card -->
+            <div class="script-card">
+                <div>
+                    <h3>Sample Script</h3>
+                    <p>Ye ek sample description hai script ka. Aap Manage button se ise control kar sakte hain.</p>
+                </div>
+                <div class="btn-container">
+                    <a href="#" class="download-btn">Download Script</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer with Manage Button -->
+    <footer>
+        <p>&copy; 2026 Script Store. All rights reserved.</p>
+        <button id="manageBtn" class="manage-btn">Manage</button>
+    </footer>
+
+    <!-- Admin Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Login</h2>
+            <input type="text" id="adminUser" placeholder="Enter ID">
+            <input type="password" id="adminPass" placeholder="Enter Password">
+            <div class="modal-buttons">
+                <button id="loginSubmit" class="submit-btn">Login</button>
+                <button id="loginCancel" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="adminPanel" class="modal">
+        <div class="modal-content large">
+            <h2>Admin Panel - Add New Script</h2>
+            <input type="text" id="newTitle" placeholder="Script Title">
+            <textarea id="newDesc" placeholder="Script Description"></textarea>
+            <input type="text" id="newLink" placeholder="Download Link">
+            <div class="modal-buttons">
+                <button id="addScriptBtn" class="submit-btn">Add Script</button>
+                <button id="closeAdmin" class="cancel-btn">Close Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const manageBtn = document.getElementById('manageBtn');
+        const loginModal = document.getElementById('loginModal');
+        const loginCancel = document.getElementById('loginCancel');
+        const loginSubmit = document.getElementById('loginSubmit');
+        const adminUser = document.getElementById('adminUser');
+        const adminPass = document.getElementById('adminPass');
+
+        const adminPanel = document.getElementById('adminPanel');
+        const closeAdmin = document.getElementById('closeAdmin');
+        const addScriptBtn = document.getElementById('addScriptBtn');
+        const scriptGrid = document.getElementById('scriptGrid');
+        const searchInput = document.getElementById('searchInput');
+
+        // Open Login Modal
+        manageBtn.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+        });
+
+        // Close Login Modal
+        loginCancel.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+            adminUser.value = '';
+            adminPass.value = '';
+        });
+
+        // Verify Credentials
+        loginSubmit.addEventListener('click', () => {
+            const user = adminUser.value.trim();
+            const pass = adminPass.value.trim();
+
+            if (user === 'admin' && pass === 'admin123') {
+                loginModal.style.display = 'none';
+                adminUser.value = '';
+                adminPass.value = '';
+                adminPanel.style.display = 'flex'; // Open Admin Panel
+            } else {
+                alert('Invalid ID or Password! (ID: admin, Pass: admin123)');
+            }
+        });
+
+        // Close Admin Panel
+        closeAdmin.addEventListener('click', () => {
+            adminPanel.style.display = 'none';
+        });
+
+        // Add New Script Logic
+        addScriptBtn.addEventListener('click', () => {
+            const title = document.getElementById('newTitle').value.trim();
+            const desc = document.getElementById('newDesc').value.trim();
+            const link = document.getElementById('newLink').value.trim();
+
+            if (!title || !desc || !link) {
+                alert('Please fill all fields!');
+                return;
+            }
+
+            // Create New Card Element
+            const card = document.createElement('div');
+            card.classList.add('script-card');
+            card.innerHTML = `
+                <div>
+                    <h3>${title}</h3>
+                    <p>${desc}</p>
+                </div>
+                <div class="btn-container">
+                    <a href="${link}" target="_blank" class="download-btn">Download Script</a>
+                </div>
+            `;
+
+            // Append to Grid
+            scriptGrid.appendChild(card);
+
+            // Clear inputs and close panel
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newDesc').value = '';
+            document.getElementById('newLink').value = '';
+            adminPanel.style.display = 'none';
+            
+            alert('Script added successfully!');
+        });
+
+        // Search Filter Functionality
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.script-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const desc = card.querySelector('p').textContent.toLowerCase();
+                if (title.includes(term) || desc.includes(term)) {
+                    card.style.display = "flex";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
